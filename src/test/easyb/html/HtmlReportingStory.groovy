@@ -43,7 +43,7 @@ findSpecificationsListDiv = {
     findContentDiv().div.find { it['@class'] == 'post' }.div.find { it['@class'] == 'entry' }.div.find { it['@id'] == 'SpecificationsList' }
 }
 
-/*
+
 scenario "a passing, failing and pending specification", {
     given "a specification file with passing, failing and pending specifications is loaded", {
         storyBehavior = BehaviorFactory.createBehavior(new File("${testSourceDir}/html/PassingPendingFailing.specification"))
@@ -62,7 +62,7 @@ scenario "a passing, failing and pending specification", {
     }
 
     then "the resulting html should have 3 total behaviors in the behavior summary", {
-        xmlReport = new XmlSlurper().parse(new File((String) htmlReportLocation))
+        xmlReport = new XmlSlurper(new org.ccil.cowan.tagsoup.Parser()).parse(new File((String) htmlReportLocation))
         contentDiv = findContentDiv()
         summariesDiv = findSummariesDiv()
 
@@ -167,7 +167,7 @@ scenario "a passing, failing and pending specification", {
         failingSpecificationRow.td[1].@class.shouldBe 'stepResultFailed'
 
         failingSpecificationComponentDetailsRow = specificationsRow.td.table.tbody.tr[5]
-        failingSpecificationComponentDetailsRow.td.strong.text().shouldBe "expected false but was true"
+        failingSpecificationComponentDetailsRow.td.strong.text().shouldBe "org.easyb.exception.VerificationException: expected false but was true"
     }
 
     and
@@ -187,20 +187,8 @@ scenario "a passing, failing and pending specification", {
     }
 
 }
-*/
 
-before "scenario", {
-  given "open file", {
-    wf = new FileWriter("/tmp/easyb")
-  }
-}
 
-after "scenario", {
-  then "close file", {
-    wf.flush()
-    wf.close()
-  }
-}
 
 scenario "a passing, failing and pending scenario", {
     given "a story file with a passing, failing and pending scenario is loaded", {
@@ -227,7 +215,6 @@ scenario "a passing, failing and pending scenario", {
 
         behaviorsSummaryRow = summariesDiv.table[0].tbody.tr
 
-        wf.append(xmlReport.text() + "\n")
         behaviorsSummaryRow.td[0].text().shouldBe '3'
     }
 
